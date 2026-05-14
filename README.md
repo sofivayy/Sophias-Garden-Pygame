@@ -17,3 +17,32 @@
 <img width="1249" height="869" alt="image" src="https://github.com/user-attachments/assets/1aa8885c-d384-4cbd-99b2-763eeb44d6ae" />
 
 <img width="1245" height="870" alt="image" src="https://github.com/user-attachments/assets/18bec629-dadf-4ae5-a068-311515a307e9" />
+
+Прилагаем ссылку на видео, в котором можно ознакомиться с полноценным геймплеем игры: https://disk.yandex.ru/i/BjRQUIUjjUaw2w
+
+🛠 Технические требования
+Для запуска игры вам понадобятся:
+
+Python 3.8 или выше.
+
+Библиотека Pygame: используется для отрисовки графики и обработки звука.
+
+Экран: разрешение не менее 1000x700 пикселей.
+
+📥 Установка и запуск
+Клонируйте репозиторий или скачайте его как ZIP-архив:
+
+Bash
+git clone [ССЫЛКА_НА_РЕПОЗИТОРИЙ](https://github.com/sofivayy/Sophias-Garden-Pygame)
+Установите библиотеку Pygame, если она еще не установлена:
+
+Bash
+pip install pygame
+Перейдите в папку проекта:
+
+Bash
+cd Sophias-Garden
+Запустите игру:
+
+Bash
+python main.py
