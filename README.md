@@ -18,15 +18,15 @@
 ### 📸 Скриншоты геймплея
 
 <p align="center">
-  <img width="600" alt="Меню игры" src="https://github.com/user-attachments/assets/1aa8885c-d384-4cbd-99b2-763eeb44d6ae" />
+  <img width="600" alt="Меню игры" src="https://github.com/user-attachments/assets/7f95457f-fd09-43ec-b0c1-26316ba57b58" />
 </p>
 
 <p align="center">
-  <img width="600" alt="Игровой процесс" src="https://github.com/user-attachments/assets/18bec629-dadf-4ae5-a068-311515a307e9" />
+  <img width="600" alt="Игровой процесс" src="https://github.com/user-attachments/assets/9128d61c-05ac-4dbd-8ed3-608af1c406df" />
 </p>
 
-🎥 **Посмотреть видео с полноценным геймплеем:** https://disk.yandex.ru/i/BjRQUIUjjUaw2w
-
+🎥 **Посмотреть видео с полноценным геймплеем:** 
+<iframe width="720" height="405" src="https://rutube.ru/play/embed/f717b96974a6e058beb69837eeaafac5"  allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
 ---
 
 ### 🛠 Технические требования
