@@ -53,6 +53,7 @@ def load_font(size):
 title_font = load_font(56)
 font = load_font(18)
 small_font = load_font(10)
+rules_font = load_font(13)
 
 # Функция для отрисовки текста с простой тенью
 def draw_ui_text(text, x, y, color):
@@ -135,6 +136,9 @@ dead_sound = pygame.mixer.Sound(
 click_sound = pygame.mixer.Sound(
     os.path.join(SOUND_DIR, "click.wav")
 )
+# Загрузка фоновой музыки
+pygame.mixer.music.load(os.path.join(SOUND_DIR, "background_music.mp3"))
+pygame.mixer.music.set_volume(0.3)
 
 # Настройка громкости звуков
 water_sound.set_volume(1)
@@ -145,6 +149,8 @@ collect_sound.set_volume(0.5)
 
 # Загрузка изображений для кнопок интерфейса
 start_button_img = load_image("start_button.png", (300, 90))
+rules_button_img = load_image("start_button.png", (300, 90))
+
 record_plate_img = load_image("start_button.png", (300, 90))
 
 
@@ -164,15 +170,22 @@ selected_plant = 1
 coins = 0
 score = 0
 highscore = 0
-
+sound_on = True  # По умолчанию звук включен
+show_rules = False
 game_state = "menu"
 
 
-# Прямоугольник кнопки "Старт" в главном меню
+# Прямоугольники кнопки "Старт" и "Правила" в главном меню
 start_button = pygame.Rect(
     WIDTH // 2 - 150,
     320,
     300,
+    90
+)
+rules_menu_button = pygame.Rect(
+    WIDTH // 2 - 150,
+    429, 
+    300, 
     90
 )
 
@@ -387,10 +400,14 @@ for i in range(5):
 
     shop_buttons.append(rect)
 
+# Прямоугольник для кнопки выхода в меню (справа сверху)
+exit_button_rect = pygame.Rect(WIDTH - 130, 20, 70, 45)
+# Кнопка звука (справа снизу)
+mute_button_rect = pygame.Rect(WIDTH - 125, HEIGHT - 150, 50, 50)
 
 # Главный игровой цикл
 running = True
-
+pygame.mixer.music.play(-1)
 while running:
 
     clock.tick(FPS)
@@ -407,14 +424,18 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
 
             mx, my = pygame.mouse.get_pos()
-
+            if show_rules:
+                show_rules = False
+                click_sound.play()
+                continue
 
             # Логика кликов в главном меню
             if game_state == "menu":
-
+        
                 if start_button.collidepoint(mx, my):
                     click_sound.play()
                     game_state = "game"
+                    
 
                     # Сброс прогресса для новой игры
                     score = 0
@@ -425,10 +446,19 @@ while running:
                         p.stage = 0
                         p.hydration = 100
                         p.dead = False
+                
+                elif rules_menu_button.collidepoint(mx, my):
+                    click_sound.play()
+                    show_rules = True
 
 
             # Логика кликов во время самого игрового процесса
             elif game_state == "game":
+                # Проверка клика по кнопке "В МЕНЮ"
+                if exit_button_rect.collidepoint(mx, my):
+                    click_sound.play()
+                    game_state = "menu"
+                    continue # Прерываем текущую итерацию, чтобы клик не "прошиб" насквозь к горшку
 
                 # Проверка клика по кнопкам магазина
                 for i, btn in enumerate(shop_buttons):
@@ -442,6 +472,27 @@ while running:
 
                     if p.get_rect().collidepoint(mx, my):
                         p.click()
+                # Проверка клика по кнопке звука
+                if mute_button_rect.collidepoint(mx, my):
+                    sound_on = not sound_on
+                    volume = 1.0 if sound_on else 0.0
+                    
+
+                    water_sound.set_volume(volume)
+                    grow_sound.set_volume(volume * 0.1)
+                    collect_sound.set_volume(volume * 0.5)
+                    dead_sound.set_volume(volume)
+                    click_sound.set_volume(volume)
+                    
+                    #Управление фоновой музыкой ---
+                    if sound_on:
+                        pygame.mixer.music.set_volume(0.3) 
+                        pygame.mixer.music.unpause()      
+                    else:
+                        pygame.mixer.music.set_volume(0)   
+                        pygame.mixer.music.pause()         
+                    
+                    continue
 
 
             # Логика возврата из окна "Game Over" в меню
@@ -507,13 +558,25 @@ while running:
 
         draw_text_with_outline("НАЧАТЬ ИГРУ", font,start_button.centerx - 105, start_button.centery - 15, text_color)
 
+        if start_button_img:
+            screen.blit(start_button_img, rules_menu_button.topleft)
+        
+        # Определяем цвет текста при наведении
+        rules_hover = rules_menu_button.collidepoint(pygame.mouse.get_pos())
+        rules_text_color = (220, 20, 60) if rules_hover else WHITE
+        
+        draw_text_with_outline("ПРАВИЛА", font, 
+                               rules_menu_button.centerx - 75, 
+                               rules_menu_button.centery - 15, 
+                               rules_text_color)
+        
 
 
         # Отрисовка таблички с рекордом
         if record_plate_img:
 
             record_rect = record_plate_img.get_rect(
-                center=(WIDTH // 2, 500)
+                center=(WIDTH // 2, 580)
             )
 
             screen.blit(record_plate_img, record_rect)
@@ -609,6 +672,29 @@ while running:
             price_txt = small_font.render(f"{price}(C)", True, (139, 0, 0))
             screen.blit(price_txt, (btn.x + 50, btn.y + 37))
 
+        # Отрисовка кнопки "В МЕНЮ"
+        pygame.draw.rect(screen, (180, 60, 60), exit_button_rect, border_radius=100) # Темно-красный фон
+        
+        # Проверяем наведение мышки для эффекта подсветки
+        if exit_button_rect.collidepoint(pygame.mouse.get_pos()):
+             pygame.draw.rect(screen, (220, 80, 80), exit_button_rect, border_radius=10) # Светлее при наведении
+        
+        # Текст на кнопке
+        exit_text = small_font.render("выход", True, BLACK)
+        screen.blit(exit_text, (exit_button_rect.centerx - exit_text.get_width() // 2, 
+                               exit_button_rect.centery - exit_text.get_height() // 2))
+    
+    # Отрисовка кнопки звука
+        color = (100, 200, 100) if sound_on else (200, 100, 100) # Зеленый если ВКЛ, красный если ВЫКЛ
+        pygame.draw.circle(screen, color, mute_button_rect.center, 25)
+        pygame.draw.circle(screen, BLACK, mute_button_rect.center, 25, 2) # Ободок
+        
+        # Текстовая заглушка вместо иконки (можно заменить на картинку динамика)
+        sound_label = "SND" if sound_on else "MUT"
+        label_surf = small_font.render(sound_label, True, BLACK)
+        screen.blit(label_surf, (mute_button_rect.centerx - label_surf.get_width() // 2, 
+                                mute_button_rect.centery - label_surf.get_height() // 2))
+
 
 
     # Отрисовка состояния "Конец игры"
@@ -654,7 +740,42 @@ while running:
             click,
             (WIDTH // 2 - click.get_width() // 2, 420)
         )
+        
+    if show_rules:
+        # 1. Затемняем весь экран (и меню, и игру)
+        overlay = pygame.Surface((WIDTH, HEIGHT))
+        overlay.set_alpha(200)
+        overlay.fill(BLACK)
+        screen.blit(overlay, (0, 0))
 
+        # 2. Рисуем подложку окна
+        rules_box = pygame.Rect(WIDTH // 2 - 300, HEIGHT // 2 - 200, 600, 400)
+        pygame.draw.rect(screen, (50, 50, 50), rules_box, border_radius=20)
+        pygame.draw.rect(screen, GOLD, rules_box, 3, border_radius=20)
+
+        # 3. Пишем текст правил
+        lines = [
+            "ПРАВИЛА САДА",
+            "все действия левой кнопкой мыши",
+            "1. Выбирай семена, кликая на нужные снизу",
+            "2. Сажай их в пустые горшки на полках,",
+            "кликая на них.",
+            "3. Поливай, кликая на горшок, когда шкала",
+            "в ЗЕЛЕНОЙ, либо ГОЛУБОЙ зоне.",
+            "4. Полив в ЗЕЛЕНОЙ зоне ускоряет рост.",
+            "5. Не дай ни одному цветку засохнуть!",
+            "",
+            "",
+            "Кликни в любом месте, чтобы закрыть."
+        ]
+        
+        for i, line in enumerate(lines):
+            # Заголовок золотой, остальное белое
+            c = GOLD if i == 0 else WHITE
+            # Используем font (размер 18), который у тебя уже создан
+            txt = rules_font.render(line, True, c)
+            screen.blit(txt, (rules_box.x + 40, rules_box.y + 50 + i * 35))
+            
     # Обновление всего экрана
     pygame.display.flip()
 
