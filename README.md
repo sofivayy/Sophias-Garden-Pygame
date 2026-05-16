@@ -25,8 +25,7 @@
   <img width="600" alt="Игровой процесс" src="https://github.com/user-attachments/assets/9128d61c-05ac-4dbd-8ed3-608af1c406df" />
 </p>
 
-🎥 **Посмотреть видео с полноценным геймплеем:** 
-<iframe width="720" height="405" src="https://rutube.ru/play/embed/f717b96974a6e058beb69837eeaafac5"  allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+🎥 **Посмотреть видео с полноценным геймплеем:** https://rutube.ru/video/f717b96974a6e058beb69837eeaafac5/
 ---
 
 ### 🛠 Технические требования
